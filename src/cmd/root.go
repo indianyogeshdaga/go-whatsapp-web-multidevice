@@ -160,6 +160,9 @@ func initEnvConfig() {
 	if viper.IsSet("whatsapp_auto_download_media") {
 		config.WhatsappAutoDownloadMedia = viper.GetBool("whatsapp_auto_download_media")
 	}
+	if viper.IsSet("whatsapp_ignore_status_media") {
+		config.WhatsappIgnoreStatusMedia = viper.GetBool("whatsapp_ignore_status_media")
+	}
 	if envWebhook := viper.GetString("whatsapp_webhook"); envWebhook != "" {
 		webhook := strings.Split(envWebhook, ",")
 		config.WhatsappWebhook = webhook
@@ -183,6 +186,9 @@ func initEnvConfig() {
 			}
 		}
 		config.WhatsappWebhookIgnoreJids = jids
+	}
+	if viper.IsSet("whatsapp_webhook_device_merge_global") {
+		config.WhatsappWebhookDeviceMergeGlobal = viper.GetBool("whatsapp_webhook_device_merge_global")
 	}
 	if viper.IsSet("whatsapp_account_validation") {
 		config.WhatsappAccountValidation = viper.GetBool("whatsapp_account_validation")
@@ -426,6 +432,12 @@ func initFlags() {
 		config.WhatsappAutoDownloadMedia,
 		`auto download media from incoming messages --auto-download-media <true/false> | example: --auto-download-media=false`,
 	)
+	rootCmd.PersistentFlags().BoolVarP(
+		&config.WhatsappIgnoreStatusMedia,
+		"ignore-status-media", "",
+		config.WhatsappIgnoreStatusMedia,
+		`ignore downloading status media --ignore-status-media <true/false> | example: --ignore-status-media=true`,
+	)
 	rootCmd.PersistentFlags().StringSliceVarP(
 		&config.WhatsappWebhook,
 		"webhook", "w",
@@ -455,6 +467,12 @@ func initFlags() {
 		"webhook-ignore-jids", "",
 		config.WhatsappWebhookIgnoreJids,
 		`comma-separated WhatsApp JIDs (or "@g.us"/"@s.whatsapp.net"/"@lid" wildcards) to skip when forwarding to webhooks --webhook-ignore-jids <list> | example: --webhook-ignore-jids="@g.us,628123456789@s.whatsapp.net"`,
+	)
+	rootCmd.PersistentFlags().BoolVarP(
+		&config.WhatsappWebhookDeviceMergeGlobal,
+		"webhook-device-merge-global", "",
+		config.WhatsappWebhookDeviceMergeGlobal,
+		`also deliver a device's events to the global --webhook URLs when that device has its own webhook (default: device webhook replaces the global ones) --webhook-device-merge-global <true/false> | example: --webhook-device-merge-global=true`,
 	)
 	rootCmd.PersistentFlags().BoolVarP(
 		&config.WhatsappAccountValidation,

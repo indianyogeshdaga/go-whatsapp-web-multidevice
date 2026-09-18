@@ -170,12 +170,9 @@ func restServer(_ *cobra.Command, _ []string) {
 		})
 	}
 
-	// Device-scoped operations (header-based)
-	headerDeviceGroup := apiGroup.Group("", middleware.DeviceMiddleware(dm))
-	registerDeviceScopedRoutes(headerDeviceGroup)
-
 	// Chatwoot sync + per-device config routes - require authentication (the
-	// webhooks are registered earlier without auth).
+	// webhooks are registered earlier without auth). Registered before
+	// headerDeviceGroup so they are not intercepted by DeviceMiddleware.
 	if config.ChatwootEnabled {
 		apiGroup.Post("/chatwoot/sync", chatwootHandler.SyncHistory)
 		apiGroup.Get("/chatwoot/sync/status", chatwootHandler.SyncStatus)
@@ -191,6 +188,13 @@ func restServer(_ *cobra.Command, _ []string) {
 	uiCtx, uiCancel := context.WithCancel(context.Background())
 	defer uiCancel()
 	registerUIRoute(apiGroup, uiCtx)
+
+	// Device-scoped operations (header-based). This must stay the LAST
+	// registration on apiGroup: Group("") registers a root "use" route that
+	// matches every path, so DeviceMiddleware would also run for anything
+	// mounted after it. TestDeviceGroupIsRegisteredLast pins the order.
+	headerDeviceGroup := apiGroup.Group("", middleware.DeviceMiddleware(dm))
+	registerDeviceScopedRoutes(headerDeviceGroup)
 
 	go websocket.RunHub()
 
