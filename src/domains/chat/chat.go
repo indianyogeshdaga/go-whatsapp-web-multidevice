@@ -67,11 +67,14 @@ type MessageInfo struct {
 	Reactions         []ReactionInfo `json:"reactions,omitempty"`
 	// CallMetadata is JSON when media_type is "call" (incoming call log).
 	CallMetadata string `json:"call_metadata,omitempty"`
-	Filename     string `json:"filename"`
-	URL          string `json:"url"`
-	FileLength   uint64 `json:"file_length"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	// ContextMetadata is a JSON string containing replied_to_id when this message is a reply.
+	ContextMetadata  string `json:"context_metadata,omitempty"`
+	ReferralMetadata string `json:"referral_metadata,omitempty"`
+	Filename         string `json:"filename"`
+	URL              string `json:"url"`
+	FileLength       uint64 `json:"file_length"`
+	CreatedAt        string `json:"created_at"`
+	UpdatedAt        string `json:"updated_at"`
 }
 
 type PaginationResponse struct {

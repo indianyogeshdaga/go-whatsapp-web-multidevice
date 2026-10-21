@@ -33,6 +33,7 @@ type Message struct {
 	FileEncSHA256    []byte     `db:"file_enc_sha256"`
 	FileLength       uint64     `db:"file_length"`
 	ReferralMetadata string     `db:"referral_metadata"`
+	ContextMetadata  string     `db:"context_metadata"`
 	Reactions        []Reaction `db:"-"`
 	CreatedAt        time.Time  `db:"created_at"`
 	UpdatedAt        time.Time  `db:"updated_at"`
@@ -179,6 +180,16 @@ type MessageFilter struct {
 	EndTime   *time.Time
 	MediaOnly bool
 	IsFromMe  *bool
+}
+
+// ScheduledSendFilter represents query filters for scheduled sends
+type ScheduledSendFilter struct {
+	DeviceID    string
+	Status      string
+	Search      string
+	MessageType string
+	Limit       int
+	Offset      int
 }
 
 // ChatFilter represents query filters for chats
